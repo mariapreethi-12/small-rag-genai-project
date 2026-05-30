@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError
+from pypdf import PdfReader
 
 
 PROJECT_DIR = Path(__file__).parent
@@ -17,6 +18,11 @@ def load_documents(data_dir: Path) -> list[dict]:
     documents = []
     for path in sorted(data_dir.glob("*.txt")) + sorted(data_dir.glob("*.md")):
         text = path.read_text(encoding="utf-8").strip()
+        if text:
+            documents.append({"source": path.name, "text": text})
+    for path in sorted(data_dir.glob("*.pdf")):
+        reader = PdfReader(path)
+        text = "\n".join(page.extract_text() or "" for page in reader.pages).strip()
         if text:
             documents.append({"source": path.name, "text": text})
     return documents
@@ -84,11 +90,15 @@ def retrieve(client: OpenAI, question: str, records: list[dict], embedding_model
     return sorted(scored, key=lambda record: record["score"], reverse=True)[:top_k]
 
 
-def answer_question(client: OpenAI, question: str, contexts: list[dict], chat_model: str) -> str:
-    context_block = "\n\n".join(
-        f"[{item['id']}]\n{item['chunk']}"
+def format_context_block(contexts: list[dict]) -> str:
+    return "\n\n".join(
+        f"[{item['id']} | score: {item.get('score', 0):.3f}]\n{item['chunk']}"
         for item in contexts
     )
+
+
+def answer_question(client: OpenAI, question: str, contexts: list[dict], chat_model: str) -> str:
+    context_block = format_context_block(contexts)
     prompt = f"""
 Answer the question using only the context below.
 If the context does not contain the answer, say you do not know.
