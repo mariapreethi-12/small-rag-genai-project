@@ -98,6 +98,12 @@ flowchart LR
 - Keeps secrets out of Git with `.env` and `.gitignore`.
 - Uses a simple JSON vector store to keep the project easy to understand.
 
+## Demo Assets
+
+- `linkedin_post.md` contains a ready-to-edit LinkedIn learning post.
+- `assets/rag_demo_output.gif` is a short visual demo for sharing the result.
+- `create_demo_gif.py` regenerates the demo GIF.
+
 ## Notes
 
 - Add your own `.md`, `.txt`, or `.pdf` files to `data/`, then rerun
