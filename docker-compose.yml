@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      APP_API_KEY: ${APP_API_KEY:-dev-local-key}
+      DATABASE_URL: postgresql://rag:rag@postgres:5432/rag
+      CHROMA_PATH: /app/chroma_db
+    volumes:
+      - ./data:/app/data
+      - ./enterprise_store:/app/enterprise_store
+      - ./chroma_db:/app/chroma_db
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

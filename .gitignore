@@ -3,3 +3,7 @@
 __pycache__/
 *.py[cod]
 vector_store.json
+enterprise_store/
+chroma_db/
+*.db
+cloned_repos/

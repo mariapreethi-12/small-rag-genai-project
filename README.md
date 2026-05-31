@@ -9,15 +9,21 @@ It includes both:
 
 - A command-line app for simple demos.
 - A Streamlit web app with uploads, retrieval scores, and cited evidence.
+- An enterprise-style FastAPI backend with multi-agent RAG, hybrid retrieval,
+  memory, evaluation, analytics, auth, Docker, and AWS deployment notes.
 
 ## Files
 
 - `app.py` - command-line RAG app.
 - `streamlit_app.py` - interactive web UI.
+- `enterprise/` - modular enterprise RAG backend.
+- `enterprise_dashboard.py` - Streamlit dashboard for the FastAPI backend.
+- `docs/enterprise-architecture.md` - system design and AWS deployment notes.
 - `data/` - put your knowledge base files here.
 - `vector_store.json` - generated after indexing.
 - `.env.example` - environment variable template.
 - `requirements.txt` - Python dependencies.
+- `requirements-enterprise.txt` - optional enterprise dependencies.
 
 ## Setup
 
@@ -64,6 +70,42 @@ The web app lets you:
 - Inspect retrieved chunks and similarity scores.
 - See citations in the generated answer.
 
+## Run the Enterprise API
+
+Install the enterprise dependencies:
+
+```powershell
+pip install -r requirements-enterprise.txt
+```
+
+Start FastAPI:
+
+```powershell
+python -m uvicorn enterprise.api:app --reload
+```
+
+Open the interactive API docs:
+
+```text
+http://localhost:8000/docs
+```
+
+Use this header for protected endpoints:
+
+```text
+X-API-Key: dev-local-key
+```
+
+Privacy note: ingestion sends document text to the embedding provider. Do not
+ingest personal or confidential files unless you intend to process them with the
+configured model provider.
+
+Run the enterprise dashboard in another terminal:
+
+```powershell
+streamlit run enterprise_dashboard.py
+```
+
 ## How It Works
 
 1. Loads Markdown, text, and PDF files from `data/`.
@@ -92,11 +134,15 @@ flowchart LR
 ## Recruiter Talking Points
 
 - Built a complete RAG pipeline from document ingestion to answer generation.
+- Expanded it into a multi-agent enterprise architecture with Research,
+  Citation, and Answering agents.
+- Added hybrid retrieval with BM25, vector search, and reranking.
 - Added transparent retrieval with source citations and similarity scores.
 - Supports multiple document formats, including PDFs.
-- Provides both CLI and web UI experiences.
+- Provides CLI, Streamlit UI, FastAPI API, and evaluation dashboard experiences.
 - Keeps secrets out of Git with `.env` and `.gitignore`.
-- Uses a simple JSON vector store to keep the project easy to understand.
+- Includes ChromaDB and FAISS integration points, Docker, PostgreSQL scaffolding,
+  auth, analytics, and AWS deployment notes.
 
 ## Demo Assets
 
